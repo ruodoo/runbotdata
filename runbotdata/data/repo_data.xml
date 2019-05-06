@@ -37,34 +37,48 @@
         <field name="duplicate_id" ref="repo_enterprise"/>
         <field name="dependency_ids" eval="[(4, ref('repo_community_dev'))]"/>
     </record>
+
+
     <record id='cron_update' model='ir.cron'>
         <field name="active" eval="False"/>
         <field name="code">
 self = model
 repos = self.search([('mode', '!=', 'disabled')])
-self._update(repos, force=False)
-self._create_pending_builds(repos)
+#repos._update(force=False)
+repos._create_pending_builds()
         </field>
         <field name="model_id" ref='runbot.model_runbot_repo'/>
-        <field name="name">Update</field>
-        <field name="numbercall">0 </field>
+        <field name="name">Test create cron</field>
+        <field name="numbercall">0</field>
         <field name="state">code</field>
         <field name="type">ir.actions.server</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+
     </record>
     <record id='cron_build' model='ir.cron'>
-        <field name="active" eval="False"/>
+        <field name="active" eval="True"/>
         <field name="code">
 self = model
 repos = self.search([('mode', '!=', 'disabled')])
-self._scheduler(repos.ids)
+repos._scheduler()
         </field>
         <field name="model_id" ref='runbot.model_runbot_repo'/>
-        <field name="name">Build</field>
-        <field name="numbercall">0 </field>
+        <field name="name">Test run cron</field>
+        <field name="numbercall">-1</field>
         <field name="state">code</field>
         <field name="type">ir.actions.server</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">seconds</field>
     </record>
 
+    <record id="runbot_redirect" model="website.redirect">
+        <field name="type">302</field>
+        <field name="url_from">/</field>
+        <field name="url_to">/runbot</field>
+    </record>
 
-    
+    <record id="website.homepage_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
 </odoo>
